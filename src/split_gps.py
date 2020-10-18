@@ -9,7 +9,8 @@ import lib.gps
 dataDir = '../data/'
 
 # Load gpx file's data
-gps, time = lib.gps.GetGPS(dataDir+'main_boat_position/onboard_gps_source2/track-93020-124147pm.gpx')
+gps, time = lib.gps.get_gps_data(dataDir+'main_boat_position/track-93020-124147pm.gpx')
+gps, time = lib.gps.get_gps_data(dataDir+'main_boat_position/AI Tracks at Sea High Frequency GPS_train.txt')
 
 
 for i in range(7,22):

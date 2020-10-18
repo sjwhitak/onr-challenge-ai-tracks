@@ -25,6 +25,6 @@ def get_gps_data(fileName):
         for segment in track.segments:
             for point in segment.points:
                 GPSList.append([point.latitude, point.longitude])
-                TimeList.append(point.time)     
+                TimeList.append((point.time).replace(tzinfo=None))     
     
     return np.array(GPSList), np.array(TimeList)

@@ -2,7 +2,8 @@ import sys
 import numpy as np
 import pandas as pd
 import datetime
-sys.path.append('../')
+if '../' not in sys.path:
+    sys.path.append('../')
 import lib.gps
 
 # Location of data folder
@@ -41,4 +42,4 @@ for i in range(7,22):
     # Write to numpy array
     video = np.hstack((video_gps, np.expand_dims(video_time,1)))
     
-    np.save(dataDir+'cleaned_boat_gps/SOURCE_GPS_LOG'+str(i)+'.npy', video)
+    np.save(dataDir+'cleaned_boat_gps/SOURCE_GPS_LOG_'+str(i)+'.npy', video)

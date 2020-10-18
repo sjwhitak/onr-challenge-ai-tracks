@@ -6,7 +6,7 @@ import lib.gps, lib.cv
 import cv2
 import glob
 
-def watch_video(file_name):
+def watch_video(file_name, fps=30):
     # https://www.learnopencv.com/read-write-and-display-a-video-using-opencv-cpp-python/
     
     # Open video stream
@@ -20,7 +20,7 @@ def watch_video(file_name):
             cv2.imshow('Frame', frame)
             
             # Quit if you press q
-            if cv2.waitKey(25) & 0xFF == ord('q'):
+            if cv2.waitKey(int(1/fps*1000)) & 0xFF == ord('q'):
                 break
         else:
             break
@@ -30,12 +30,12 @@ def watch_video(file_name):
     cv2.destroyAllWindows()
     return True
 
-def watch_both_videos(frame1, frame2):
+def watch_both_videos(frame1, frame2, fps=30):
     cv2.imshow('Differences', frame1)
     cv2.imshow('Original Video', frame2)
     
     # Quit if you press q (wait 25 ms)
-    if cv2.waitKey(25) & 0xFF == ord('q'):
+    if cv2.waitKey(int(1/fps*1000)) & 0xFF == ord('q'):
         stream.release()
         cv2.destroyAllWindows()
 
@@ -43,8 +43,7 @@ dataPath = '../data/'
 
 files = sorted(glob.glob(dataPath+'video/*.mp4'))
 
-# TODO(sjwhitak): The VideoCapture() reads the stream at the video FPS and not
-#                 as fast as possible.
+# Just do the first file for now
 stream = cv2.VideoCapture(files[0])
 
 i = 0
@@ -68,7 +67,7 @@ while stream.isOpened():
         # Get the difference between two frames for object detection
         frame_thresh = lib.cv.frame_difference([frame_first, frame_second], 10)
         
-        watch_both_videos(frame_thresh, frame_second)
+        watch_both_videos(frame_thresh, frame_second, 30)
 
     # Move to the next frame
     frame_first = frame_second

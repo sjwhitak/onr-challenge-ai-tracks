@@ -14,8 +14,8 @@ def get_gps_data(fileName):
     """
     import gpxpy
     
-    fd = open(fileName, 'r')
-    gpx = gpxpy.parse(fd)
+    with open(fileName, 'r') as fd:
+        gpx = gpxpy.parse(fd)
     GPSList = []
     TimeList = []
     

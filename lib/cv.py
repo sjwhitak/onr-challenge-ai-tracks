@@ -2,6 +2,11 @@
 import cv2, numpy as np
 from scipy import interpolate
 
+def get_positions():
+    
+    
+    pass
+
 def frame_difference(imgList,threshold):
     """
     Parameters
@@ -130,8 +135,8 @@ def homography_transform(x, H):
     
     Parameters
     ----------
-    x : [2 x n] numpy array
-        Input locations at [x_1, y_1], [x_2, y_2] ...
+    x : [3 x n] numpy array
+        Input locations at [x_1, y_1, 1], [x_2, y_2, 1] ...
     H : [3 x 3] numpy array
         Homography transform matrix 
 
@@ -146,3 +151,34 @@ def homography_transform(x, H):
         y[i] = H.dot(x[i])
         y[i,:] /= y[i,2]
     return y[:,:-1]
+
+def affine_transform(x, H):
+    """
+    Converts R^2 to R^2 with H, affine transform with a rotate and offset:
+        y = H_{11,22}*x + H_{31,32}
+    
+    Parameters
+    ----------
+    x : [n x 2] or [2 x n] numpy array
+        Input locations at [x_1, y_1, 1], [x_2, y_2, 1] ...
+    H : [2 x 3] numpy array
+        Homography transform matrix 
+
+    Returns
+    -------
+    y : [2 x n] numpy array
+        Output locations at [x_1', y_1'], [x_2', y_2'] ...
+
+    """    
+    rotation_matrix = H[:,:-1]
+    offset_matrix = H[:,-1]
+    
+    try:
+        # [n x 2]
+        y = np.matmul(rotation_matrix,x.T).T + offset_matrix
+    except:
+        # [2 x n]
+        y = np.matmul(rotation_matrix,x) + offset_matrix
+    
+    return y
+

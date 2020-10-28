@@ -11,7 +11,7 @@ print(files[2])
 
 i = 0
 while stream.isOpened():
-    i +=1
+
     # Read frame
     ret, frame = stream.read()
     if not ret:
@@ -20,5 +20,6 @@ while stream.isOpened():
     cv2.imwrite(outFolder+str(i)+'.png', frame)
     if i % 20 == 0:
         print(str(i))
+    i +=1
         
 stream.release()

@@ -134,14 +134,65 @@ pixels = np.array([[599, 431],      # 94.png
 gps_to_vid, inliers_1 = cv2.estimateAffine2D(gps, pixels)
 vid_to_gps, inliers_2 = cv2.estimateAffine2D(pixels, gps)
 
-""" Tests """
 
-# Test gps -> pixel transform
-file = '13'
-data = np.load(dataPath+'cleaned_boat_gps/SOURCE_GPS_LOG'+file+'.npy', allow_pickle=True)
-gps = data[:,:-1].astype('float32')
 
-vid_pts = lib.cv.affine_transform(gps, gps_to_vid)
+# TODO(sjwhitak): Once the transform works for gps -> pixel, interpolate
+#                 GPS positions for every single frame, and then generate 
+#                 pixels for every single frame. Then, add them to the csv
+#                 file. Use this to start up the camera bounding boxes.
 
-# Test pixel -> gps transform
-# TODO(sjwhitak): You gotta do another frame and compare the two.
+
+# =============================================================================
+# Testing above code, dont need to run it
+# """ Tests """
+# # Test gps -> pixel transfor
+# import lib.cam
+# pixels, _ = lib.cam.video_13()
+# 
+# file = '13'
+# picturePath = '../temp2/'
+# 
+# """ GRAB THE DATA """
+# # Grab GPS data
+# data = np.load(dataPath+'cleaned_boat_gps/SOURCE_GPS_LOG'+file+'.npy', allow_pickle=True)
+# 
+# # Grab csv data and map out datetime
+# csv_data = pd.read_csv(dataPath+'camera_gps_logs/SOURCE_GPS_LOG_'+file+'_cleaned.csv', delimiter=',')
+# camera_time = csv_data['estimated_time']
+# frame_time  = csv_data['Frame No.'].index.values
+# camera_datetime = np.array([dt.strptime(x, '%Y-%m-%d %H:%M:%S') for x in '2020-9-30 '+camera_time])
+# 
+# 
+# 
+# """ FILTER THE DATA """
+# # sjwhitak: (1) Grab GPS points
+# gps = data[2:,:-1].astype('float32') # Grab only GPS points
+# 
+# # Here is the time
+# time = data[2:,-1] # sjwhitak: (2)
+# 
+# # Then, go to the csv files inside the data/ directory to do --
+# # sjwhitak: (3)
+# matched_frames = [frame_time[np.where(camera_datetime == t)] for t in time]
+# 
+# # Grab the middle frame
+# individual_frames = [np.sum(frames)//len(frames) for frames in matched_frames]
+# individual_images = [picturePath+str(x)+'.png' for x in individual_frames]
+# 
+# """ OUTPUT THE DATA FOR MANUAL WORK """
+# # Copy files to manually add points
+# [shutil.copy2(image, './test') for image in individual_images]
+# 
+# 
+# 
+# # Get data from video 12
+# gps_to_vid1, vid_to_gps1 = lib.cv.generate_affine_transform(video='both')
+# gps_to_vid2, vid_to_gps2 = lib.cv.generate_affine_transform(video='12')
+# gps_to_vid3, vid_to_gps3 = lib.cv.generate_affine_transform(video='13')
+# 
+# # Test on video 13
+# gps, pixels = lib.cam.video_13()
+# vid_pts = lib.cv.affine_transform(gps, gps_to_vid2[0])
+# gps_pts = lib.cv.affine_transform(pixels, vid_to_gps2[0])
+# =============================================================================
+

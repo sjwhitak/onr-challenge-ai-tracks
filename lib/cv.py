@@ -1,84 +1,22 @@
 # -*- coding: utf-8 -*-
 import cv2, numpy as np
 from scipy import interpolate
+from . import cam
 
 
-def get_affine_points():
-    gps = np.array([[  32.703545, -117.232574],
-       [  32.703503, -117.23284 ],
-       [  32.703453, -117.233025],
-       [  32.703403, -117.233116],
-       [  32.703373, -117.23314 ],
-       [  32.703335, -117.233154],
-       [  32.70287 , -117.23314 ],
-       [  32.702682, -117.233116],
-       [  32.7026  , -117.23309 ],
-       [  32.702564, -117.23306 ],
-       [  32.702526, -117.23296 ],
-       [  32.70251 , -117.23274 ],
-       [  32.702515, -117.2326  ],
-       [  32.70255 , -117.232285],
-       [  32.702568, -117.23225 ],
-       [  32.70264 , -117.23219 ],
-       [  32.702675, -117.23219 ],
-       [  32.70272 , -117.23221 ],
-       [  32.70275 , -117.23225 ],
-       [  32.70278 , -117.23233 ],
-       [  32.702763, -117.23237 ],
-       [  32.702766, -117.23244 ],
-       [  32.702744, -117.23252 ],
-       [  32.70276 , -117.232796],
-       [  32.7028  , -117.2331  ],
-       [  32.70282 , -117.23319 ],
-       [  32.70292 , -117.23336 ],
-       [  32.702953, -117.23338 ],
-       [  32.703003, -117.23338 ],
-       [  32.703087, -117.23335 ],
-       [  32.70311 , -117.233315],
-       [  32.703117, -117.23326 ]], dtype='float32')
-    
-    pixels = np.array([[ 599.,  431.],
-       [ 588.,  433.],
-       [ 588.,  435.],
-       [ 613.,  436.],
-       [ 627.,  436.],
-       [ 663.,  438.],
-       [ 997.,  437.],
-       [1117.,  435.],
-       [1153.,  432.],
-       [1164.,  430.],
-       [1163.,  429.],
-       [1141.,  428.],
-       [1129.,  426.],
-       [1096.,  426.],
-       [1083.,  427.],
-       [1050.,  427.],
-       [1035.,  428.],
-       [1019.,  429.],
-       [1011.,  429.],
-       [1004.,  430.],
-       [1004.,  430.],
-       [1011.,  430.],
-       [1023.,  431.],
-       [1035.,  432.],
-       [1035.,  437.],
-       [1027.,  438.],
-       [ 959.,  441.],
-       [ 934.,  441.],
-       [ 891.,  442.],
-       [ 840.,  441.],
-       [ 829.,  441.],
-       [ 830.,  441.]], dtype='float32')
-    
-    return gps, pixels
 
-def generate_affine_transform():
-    gps, pixels = get_affine_points()
+def generate_affine_transform(video='12'):
+    if video =='12':
+        gps, pixels = cam.video_12()
+    elif video == '13':
+        gps, pixels = cam.video_13()
+    else:
+        gps, pixels = cam.vid_both()
     
-    gps_to_vid, inliers_1 = cv2.estimateAffine2D(gps, pixels)    
-    vid_to_gps, inliers_2 = cv2.estimateAffine2D(pixels, gps)
+    gps_to_vid = cv2.estimateAffine2D(gps, pixels)    
+    vid_to_gps = cv2.estimateAffine2D(pixels, gps)
     
-    return gps_to_vid, vid_to_gps, (inliers_1, inliers_2)
+    return gps_to_vid, vid_to_gps
     
     
 
@@ -249,11 +187,11 @@ def affine_transform(x, H):
     offset_matrix = H[:,-1]
     
     try:
-        # [n x 2]
-        y = np.matmul(rotation_matrix,x.T).T + offset_matrix
-    except:
         # [2 x n]
         y = np.matmul(rotation_matrix,x) + offset_matrix
+    except:
+        # [n x 2]
+        y = np.matmul(rotation_matrix,x.T).T + offset_matrix
     
     return y
 

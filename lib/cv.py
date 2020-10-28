@@ -2,10 +2,22 @@
 import cv2, numpy as np
 from scipy import interpolate
 
-def get_positions():
+def interpolation_2d(x, pts):
+    """
+    Parameters
+    ----------
+    x : [2 x 2]
+        Your input points
+    pts : INTEGER
+        Total number of points between the start and end
+
+    Returns
+    -------
+    x_interp : [pts x 2]
+        Interpolated points
+    """
     
-    
-    pass
+    return x_interp
 
 def frame_difference(imgList,threshold):
     """

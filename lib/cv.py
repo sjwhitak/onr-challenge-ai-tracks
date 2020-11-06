@@ -3,6 +3,18 @@ import cv2, numpy as np
 from scipy import interpolate
 from . import cam
 
+def generate_homography_transform(video='12'):
+    if video =='12':
+        gps, pixels = cam.video_12()
+    elif video == '13':
+        gps, pixels = cam.video_13()
+    else:
+        gps, pixels = cam.vid_both()
+    
+    gps_to_vid = cv2.findHomography(gps, pixels)    
+    vid_to_gps = cv2.findHomography(pixels, gps)
+    
+    return gps_to_vid[0], vid_to_gps[0]   
 
 
 def generate_affine_transform(video='12'):
@@ -16,7 +28,7 @@ def generate_affine_transform(video='12'):
     gps_to_vid = cv2.estimateAffine2D(gps, pixels)    
     vid_to_gps = cv2.estimateAffine2D(pixels, gps)
     
-    return gps_to_vid, vid_to_gps
+    return gps_to_vid[0], vid_to_gps[0]
     
     
 
@@ -51,7 +63,7 @@ def frame_difference(imgList,threshold):
         thresh = np.full_like(img_diff, 0)
         thresh[img_diff>=threshold] = 255
         thresh[img_diff<threshold] = 0
-        frame_thresh_list.append(thresh)
+        frame_thresh_list.append(img_diff)
     
     # If it's just one frame, remove the list
     if len(frame_thresh_list) == 1:

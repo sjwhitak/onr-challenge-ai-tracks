@@ -167,7 +167,7 @@ def homography_transform(x, H):
 
     Returns
     -------
-    y : [2 x n] numpy array
+    y : [n x 2] numpy array
         Output locations at [x_1', y_1'], [x_2', y_2'] ...
 
     """
@@ -191,7 +191,7 @@ def affine_transform(x, H):
 
     Returns
     -------
-    y : [2 x n] numpy array
+    y : [n x2] numpy array
         Output locations at [x_1', y_1'], [x_2', y_2'] ...
 
     """    

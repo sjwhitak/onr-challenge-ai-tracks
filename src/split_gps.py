@@ -5,6 +5,7 @@ import datetime
 if '../' not in sys.path:
     sys.path.append('../')
 import lib.gps
+import os 
 
 # Location of data folder
 dataDir = '../data/'
@@ -13,6 +14,10 @@ dataDir = '../data/'
 gps, time = lib.gps.get_gps_data(dataDir+'main_boat_position/track-93020-124147pm.gpx')
 gps, time = lib.gps.get_gps_data(dataDir+'main_boat_position/AI Tracks at Sea High Frequency GPS_train.txt')
 
+try: 
+    os.makedirs(dataDir+'cleaned_boat_gps/') 
+except: 
+    pass 
 
 for i in range(7,22):
     # Load up first camera data

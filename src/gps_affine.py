@@ -33,6 +33,7 @@ import matplotlib as mpl
 import pandas as pd
 from datetime import datetime as dt
 import shutil
+import os 
 mpl.rcParams['figure.dpi'] = 150
 
 
@@ -44,7 +45,7 @@ file = '12'
 
 """ GRAB THE DATA """
 # Grab GPS data
-data = np.load(dataPath+'cleaned_boat_gps/SOURCE_GPS_LOG'+file+'.npy', allow_pickle=True)
+data = np.load(dataPath+'cleaned_boat_gps/SOURCE_GPS_LOG_'+file+'.npy', allow_pickle=True)
 
 # Grab csv data and map out datetime
 csv_data = pd.read_csv(dataPath+'camera_gps_logs/SOURCE_GPS_LOG_'+file+'_cleaned.csv', delimiter=',')
@@ -131,7 +132,7 @@ pixels = np.array([[599, 431],      # 94.png
 # TODO(sjwhitak): The transform from gps -> pixel doesn't seem to do well,
 #                 but the transform from pixel -> gps works really well.
 #                 Notice the difference between inliers_1 and inliers_2.
-gps_to_vid, inliers_1 = cv2.estimateAffine2D(gps, pixels)
+gps_to_vid, inliers_1 = lib.cv.generate_affine_transform()
 vid_to_gps, inliers_2 = cv2.estimateAffine2D(pixels, gps)
 
 

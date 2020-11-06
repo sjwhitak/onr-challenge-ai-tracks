@@ -1,0 +1,7 @@
+.vscode/ 
+data/* 
+env/ 
+src/*.png
+**/__pycache__/ 
+temp/ 
+temp2/ 

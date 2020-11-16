@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 
-def vid_both():
+def vid_all():
     gps_12, pixels_12 = video_12()
     gps_13, pixels_13 = video_13()
-    gps = np.vstack((gps_12, gps_13))
-    pixels = np.vstack((pixels_12, pixels_13))
+    gps_16, pixels_16 = video_16()
+    
+    gps = np.vstack((gps_12, gps_13, gps_16))
+    pixels = np.vstack((pixels_12, pixels_13, pixels_16))
     return gps, pixels
     
 def video_16():

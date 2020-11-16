@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 import cv2, numpy as np
 from scipy import interpolate
-from . import cam
+import cam
 
-def generate_homography_transform(video='12'):
-    if video =='12':
-        gps, pixels = cam.video_12()
+def generate_homography_transform(video='16'):
+    if video =='16':
+        gps, pixels = cam.video_16()
     elif video == '13':
         gps, pixels = cam.video_13()
     else:
-        gps, pixels = cam.vid_both()
+        gps, pixels = cam.vid_all()
     
-    gps_to_vid = cv2.findHomography(gps, pixels)    
-    vid_to_gps = cv2.findHomography(pixels, gps)
+    gps_to_vid = cv2.findHomography(gps, pixels, method=cv2.LMEDS)    
+    vid_to_gps = cv2.findHomography(pixels, gps, method=cv2.LMEDS)
     
     return gps_to_vid[0], vid_to_gps[0]   
 
@@ -29,8 +29,8 @@ def generate_affine_transform(video='12'):
     vid_to_gps = cv2.estimateAffine2D(pixels, gps)
     
     return gps_to_vid[0], vid_to_gps[0]
-    
-    
+
+
 
 def frame_difference(imgList,threshold):
     """
@@ -160,7 +160,7 @@ def homography_transform(x, H):
     
     Parameters
     ----------
-    x : [3 x n] numpy array
+    x : [n x 2] numpy array
         Input locations at [x_1, y_1, 1], [x_2, y_2, 1] ...
     H : [3 x 3] numpy array
         Homography transform matrix 
@@ -171,11 +171,11 @@ def homography_transform(x, H):
         Output locations at [x_1', y_1'], [x_2', y_2'] ...
 
     """
-    y = np.zeros((len(x),3))
-    for i in range(len(x)):
-        y[i] = H.dot(x[i])
-        y[i,:] /= y[i,2]
-    return y[:,:-1]
+    p = np.hstack((x, np.ones((x.shape[0], 1)))).T
+    transform_out = H.dot(p)
+    px = transform_out[0]/transform_out[2]
+    py = transform_out[1]/transform_out[2]
+    return np.vstack((px,py)).T
 
 def affine_transform(x, H):
     """

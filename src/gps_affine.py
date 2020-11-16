@@ -41,7 +41,7 @@ mpl.rcParams['figure.dpi'] = 150
 dataPath = '../data/'
 picturePath = '../temp/'
 camera_gps = [32.70297,	-117.234631]
-file = '12'
+file = '13'
 
 """ GRAB THE DATA """
 # Grab GPS data
@@ -74,19 +74,42 @@ individual_images = [picturePath+str(x)+'.png' for x in individual_frames]
 # Copy files to manually add points
 [shutil.copy2(image, './') for image in individual_images]
 
+print(individual_images)
 
 # Plot so you can see the path your boat is driving
-plt.figure()
-plt.plot(data[:,1], data[:,0], label='GPS data')
-plt.plot(gps[:,1], gps[:,0], '.', label='Chosen GPS points')
-plt.plot(camera_gps[1], camera_gps[0],'o', label='Position of camera')
-plt.title('Position of points chosen for affine transform')
-plt.legend()
-plt.xlabel('Longitude')
-plt.ylabel('Latitude')
-plt.ticklabel_format(useOffset=False) # Remove exponents
-plt.show()
+# plt.figure()
+# plt.plot(data[:,1], data[:,0], label='GPS data')
+# plt.plot(gps[:,1], gps[:,0], '.', label='Chosen GPS points')
+# plt.plot(camera_gps[1], camera_gps[0],'o', label='Position of camera')
+# plt.title('Position of points chosen for affine transform')
+# plt.legend()
+# plt.xlabel('Longitude')
+# plt.ylabel('Latitude')
+# plt.ticklabel_format(useOffset=False) # Remove exponents
+# plt.show()
 
+gps = np.concatenate([gps, np.ones((len(gps), 1))], axis=1) 
+gps_to_vid, inliers_1 = lib.cv.generate_homography_transform(file)
+center = lib.cv.homography_transform(gps, gps_to_vid).astype(np.int)
+
+inds = np.arange(len(individual_images))
+np.random.shuffle(inds)
+
+for i in range(len(individual_images)): 
+    f = individual_images[inds[i]] 
+    img = np.array(plt.imread(individual_images[inds[i]])) 
+    c = center[inds[i], :]
+    print(c, gps[inds[i],:2]) 
+
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    plt.imshow(img)
+    r = 100
+    ax.add_patch(mpl.patches.Rectangle((c[0]-r, c[1]-r), r*2, r*2, color='red', fill=False))
+    plt.show() 
+
+# TODO remove 
+sys.exit() 
 
 # sjwhitak: (4)
 # Grab corresponding pixels to each frame in GIMP or Paint or something

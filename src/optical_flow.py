@@ -2,8 +2,11 @@ import numpy as np
 import cv2 as cv
 import os
 import matplotlib.pyplot as plt
+import lib.cv
 
-path = "/home/Zach/ONR/data/video/"
+
+gps_to_vid, vid_to_gps = lib.cv.generate_homography_transform('all')
+path = "../data/video/"
 
 cap = cv.VideoCapture(path + "10.mp4")
 
@@ -25,30 +28,28 @@ y = 433.
 current_point = np.array([[[x, y]], [[113., 415.]]], dtype=np.float32)
 
 while(1):
-	ret, frame = cap.read()
-	frame_gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+    ret, frame = cap.read()
+    frame_gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
 
-	new_point, st, err = cv.calcOpticalFlowPyrLK(old_gray, frame_gray, current_point, None, **lk_params)
-	#good_new = new_point[st==1]
-	#good_old = current_point[st==1]
-	"""
-	for i, (new, old) in enumerate(zip(good_new, good_old)):
-		a, b = new.ravel()
-		c, d = old.ravel()
-		mask = cv.line(mask, (a, b), (c,  d), color[i].tolist(), 2)
-		frame = cv.circle(frame, (a, b), 5, color[i].tolist(), -1)
-	img = cv.add(frame, mask)
-	"""
-
-	cv.circle(frame, tuple(new_point[0][0]), 10, (0, 255, 255), -1)
-	cv.circle(frame, tuple(new_point[1][0]), 10, (255, 0, 255), -1)
-
-	cv.imshow('frame', frame)
-	k = cv.waitKey(30) & 0xff
-	if k == 27:
-		break
-
-	old_gray = frame_gray.copy()
-	current_point = new_point #good_new.reshape(-1, 1, 2)
+    new_point, st, err = cv.calcOpticalFlowPyrLK(old_gray, frame_gray, current_point, None, **lk_params)
 
 
+    cv.circle(frame, tuple(new_point[0][0]), 10, (0, 255, 255), -1)
+    cv.circle(frame, tuple(new_point[1][0]), 10, (255, 0, 255), -1)
+    
+    gps_data = lib.cv.homography_transform(new_point.reshape(2,2), vid_to_gps)
+    
+    cv.putText(frame, '%.5f, %.5f' % (gps_data[0,0], gps_data[0,1]), (10,50), 
+               cv.FONT_HERSHEY_SIMPLEX, 1, (0,255,255), 2)
+    cv.putText(frame, '%.5f, %.5f' % (gps_data[1,0], gps_data[1,1]), (10,100), 
+               cv.FONT_HERSHEY_SIMPLEX, 1, (255,0,255), 2)
+    
+    cv.imshow('frame', frame)
+    k = cv.waitKey(30) & 0xff
+    if k == 27:
+        break
+
+    old_gray = frame_gray.copy()
+    current_point = new_point #good_new.reshape(-1, 1, 2)
+
+cv.destroyAllWindows()

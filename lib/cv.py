@@ -1,15 +1,19 @@
 # -*- coding: utf-8 -*-
 import cv2, numpy as np
 from scipy import interpolate
-import cam
+from . import cam
 
-def generate_homography_transform(video='16'):
+def generate_homography_transform(coords, video='16'):
+    camera_gps = np.array([32.70297,	-117.234631])
+    
     if video =='16':
         gps, pixels = cam.video_16()
     elif video == '13':
         gps, pixels = cam.video_13()
     else:
         gps, pixels = cam.vid_all()
+        
+    gps = gps - coords + camera_gps
     
     gps_to_vid = cv2.findHomography(gps, pixels, method=cv2.LMEDS)    
     vid_to_gps = cv2.findHomography(pixels, gps, method=cv2.LMEDS)
